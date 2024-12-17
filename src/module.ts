@@ -1,40 +1,55 @@
-import { PanelPlugin } from '@grafana/data';
-import { SimpleOptions } from './types';
-import { SimplePanel } from './components/SimplePanel';
+/*
+ * Created by Wu Jian Ping on - 2024/12/17.
+ */
 
-export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setPanelOptions((builder) => {
+import { PanelPlugin } from '@grafana/data';
+import { ScatterPanel } from './components/ScatterPanel';
+import { ScatterPanelOptions } from './types';
+
+export const plugin = new PanelPlugin<ScatterPanelOptions>(ScatterPanel).setPanelOptions((builder) => {
   return builder
+    .addFieldNamePicker({
+      path: 'xAxisFieldName',
+      name: 'X axis field name',
+      category: ["Scatter"],
+    })
+    .addFieldNamePicker({
+      path: 'yAxisFieldName',
+      name: 'Y axis field name',
+      category: ["Scatter"],
+    })
+    .addFieldNamePicker({
+      path: 'sizeFieldName',
+      name: 'Size field name',
+      category: ["Scatter"],
+    })
+    .addFieldNamePicker({
+      path: 'labelFieldName',
+      name: 'Label field name',
+      category: ["Scatter"],
+    })
     .addTextInput({
-      path: 'text',
-      name: 'Simple text option',
-      description: 'Description of panel option',
-      defaultValue: 'Default value of text input option',
+      path: 'left',
+      name: 'Left',
+      defaultValue: '8%',
+      category: ["Layout"]
     })
-    .addBooleanSwitch({
-      path: 'showSeriesCount',
-      name: 'Show series counter',
-      defaultValue: false,
+    .addTextInput({
+      path: 'right',
+      name: 'Right',
+      defaultValue: '8%',
+      category: ["Layout"]
     })
-    .addRadio({
-      path: 'seriesCountSize',
-      defaultValue: 'sm',
-      name: 'Series counter size',
-      settings: {
-        options: [
-          {
-            value: 'sm',
-            label: 'Small',
-          },
-          {
-            value: 'md',
-            label: 'Medium',
-          },
-          {
-            value: 'lg',
-            label: 'Large',
-          },
-        ],
-      },
-      showIf: (config) => config.showSeriesCount,
-    });
+    .addTextInput({
+      path: 'top',
+      name: 'Top',
+      defaultValue: '8%',
+      category: ["Layout"]
+    })
+    .addTextInput({
+      path: 'bottom',
+      name: 'Bottom',
+      defaultValue: '8%',
+      category: ["Layout"]
+    })
 });

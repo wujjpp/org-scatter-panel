@@ -1,7 +1,15 @@
-type SeriesSize = 'sm' | 'md' | 'lg';
+/*
+ * Created by Wu Jian Ping on - 2024/12/17.
+ */
 
-export interface SimpleOptions {
-  text: string;
-  showSeriesCount: boolean;
-  seriesCountSize: SeriesSize;
+export interface ScatterPanelOptions {
+  xAxisFieldName: string;
+  yAxisFieldName: string;
+  sizeFieldName: string;
+  labelFieldName: string;
+
+  left: string;
+  right: string;
+  top: string;
+  bottom: string;
 }
