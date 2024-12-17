@@ -13,11 +13,43 @@ import _ from 'lodash';
 
 interface Props extends PanelProps<ScatterPanelOptions> {}
 
-export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fieldConfig, id }) => {
-  
 
-  console.log(data.series[0])
-  
+export const colors = {
+  red: 'rgb(242, 73, 92)',
+  green: 'rgb(115, 191, 105)',
+  yellow: 'rgb(255, 152, 48)',
+  white: '#fff',
+  blue: 'rgb(110, 159, 255)',
+  lightYellow: 'rgb(250, 222, 42)',
+  purple: '#d877d9',
+  gray: '#888',
+  border: 'rgba(204, 204, 220, 0.12)',
+  borderActive: 'rgba(204, 204, 220, 0.2)',
+  redArea: 'rgba(242, 73, 92, 0.3)',
+  greenArea: 'rgb(115, 191, 105, 0.3)',
+  text: 'rgb(204, 204, 220)',
+  pureRed: '#ff0000',
+  pureGreen: '#00ff00',
+}
+
+
+const getCell = (label: string, value: string, color = ""): string => {
+  if(color) {
+    return `
+      <div style="display:flex;flex-direction:row;">
+        <div style="min-width:80px;text-align:left;">${label}</div>
+        <div style="flex:1; text-align:right;color:${color}">${value}</div>
+      </div>`
+  }
+  return `
+    <div style="display:flex;flex-direction:row;">
+        <div style="min-width:46px;text-align:right;">${label}</div>
+        <div style="flex:1; text-align:right;color:${colors.white}">${value}</div>
+    </div>`
+}
+
+
+export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fieldConfig, id }) => {  
   if (data.series.length === 0) {
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id} data={data} needsStringField />;
   }
@@ -42,14 +74,8 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
       labelField.values[i]
     ])
   }
-
-  console.log(items)
-
   const option = {
     backgroundColor: 'transparent',
-    tooltip: {
-      show: true
-    },
     grid: {
       left: options.left,
       top: options.top,
@@ -61,7 +87,11 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
         lineStyle: {
           type: 'dashed'
         }
-      }
+      },
+      axisLine: {show: false},
+      axisTick: {show: false},
+      axisLabel: {margin: 16},
+      scale: true
     },
     yAxis: {
       splitLine: {
@@ -69,7 +99,32 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
           type: 'dashed'
         }
       },
+      axisLine: {show: false},
+      axisTick: {show: false},
+      axisLabel: {margin: 16},
       scale: true
+    },
+    tooltip: {
+      show: true,
+      trigger: 'item',
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: 4,
+      backgroundColor: 'rgba(24, 27, 31, 0.9)',
+      borderRadius: 0,
+      textStyle: {
+        color: colors.text
+      },
+      formatter: (param: any) => {
+        let s = '<div style="width: 160px">'
+        s += `<div style="border-bottom: 1px solid ${colors.border}; margin: 4px -4px;"></div>`
+        s += getCell(options.labelFieldName, param.data[3], colors.text)
+        s += getCell(options.xAxisFieldName, param.data[0], colors.green)
+        s += getCell(options.yAxisFieldName, param.data[1], colors.green)
+        s += getCell(options.sizeFieldName, `${(param.data[2] * options.sizeFactor).toFixed(2)}%`, param.data[2] * options.sizeFactor >= 70 ? colors.red : colors.green)
+        s += '</div>'
+        return s
+      }
     },
     series: [
       {
@@ -79,19 +134,35 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
           return d[2]
         },
         itemStyle: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(120, 36, 50, 0.5)',
-          shadowOffsetY: 5,
-          color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
-            {
-              offset: 0,
-              color: 'rgb(251, 118, 123)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(204, 46, 72)'
+          // shadowBlur: 10,
+          // shadowColor: 'rgba(120, 36, 50, 0.5)',
+          // shadowOffsetY: 5,
+          color: (params: any) => {
+            const p = params.data[2] * options.sizeFactor
+            if(p >= 70) {
+              return new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+                {
+                  offset: 0,
+                  color: 'rgb(255, 166, 176)'
+                },
+                {
+                  offset: 1,
+                  color: 'rgb(242, 73, 92)'
+                }
+              ])
+            } else {
+              return new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+                {
+                  offset: 0,
+                  color: 'rgb(200, 242, 194)'
+                },
+                {
+                  offset: 1,
+                  color: 'rgb(115, 191, 105)'
+                }
+              ])
             }
-          ])
+          }
         }
       }
     ]

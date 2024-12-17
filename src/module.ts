@@ -28,6 +28,12 @@ export const plugin = new PanelPlugin<ScatterPanelOptions>(ScatterPanel).setPane
       name: 'Label field name',
       category: ["Scatter"],
     })
+    .addNumberInput({
+      path: 'sizeFactor',
+      name: 'Size factor',
+      defaultValue: 1,
+      category: ["Scatter"]
+    })
     .addTextInput({
       path: 'left',
       name: 'Left',

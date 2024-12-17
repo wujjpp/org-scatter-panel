@@ -7,6 +7,7 @@ export interface ScatterPanelOptions {
   yAxisFieldName: string;
   sizeFieldName: string;
   labelFieldName: string;
+  sizeFactor: number;
 
   left: string;
   right: string;
