@@ -121,7 +121,7 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
         s += getCell(options.labelFieldName, param.data[3], colors.text)
         s += getCell(options.xAxisFieldName, param.data[0], colors.green)
         s += getCell(options.yAxisFieldName, param.data[1], colors.green)
-        s += getCell(options.sizeFieldName, `${(param.data[2] * options.sizeFactor).toFixed(2)}%`, param.data[2] * options.sizeFactor >= 70 ? colors.red : colors.green)
+        s += getCell(options.sizeFieldName, `${(param.data[2]).toFixed(2)}%`, param.data[2] >= 70 ? colors.red : colors.green)
         s += '</div>'
         return s
       }
@@ -131,14 +131,14 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
         data: items,
         type: 'scatter',
         symbolSize: (d: any[]) => {
-          return d[2]
+          return d[2] * options.sizeFactor
         },
         itemStyle: {
           // shadowBlur: 10,
           // shadowColor: 'rgba(120, 36, 50, 0.5)',
           // shadowOffsetY: 5,
           color: (params: any) => {
-            const p = params.data[2] * options.sizeFactor
+            const p = params.data[2]
             if(p >= 70) {
               return new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
                 {
