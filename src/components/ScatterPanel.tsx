@@ -4,11 +4,12 @@
 
 import * as echarts from 'echarts';
 
+import { EChartsParams, ScatterPanelOptions } from 'types';
+
 import { PanelDataErrorView } from '@grafana/runtime';
 import { PanelProps } from '@grafana/data';
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
-import { ScatterPanelOptions } from 'types';
 import _ from 'lodash';
 
 interface Props extends PanelProps<ScatterPanelOptions> {}
@@ -33,17 +34,17 @@ export const colors = {
 }
 
 
-const getCell = (label: string, value: string, color = ""): string => {
+const getCell = (labelWidth: number, label: string, value: string, color = ""): string => {
   if(color) {
     return `
       <div style="display:flex;flex-direction:row;">
-        <div style="min-width:80px;text-align:left;">${label}</div>
+        <div style="min-width:${labelWidth}px;text-align:right;">${label}</div>
         <div style="flex:1; text-align:right;color:${color}">${value}</div>
       </div>`
   }
   return `
     <div style="display:flex;flex-direction:row;">
-        <div style="min-width:46px;text-align:right;">${label}</div>
+        <div style="min-width:${labelWidth}px;text-align:right;">${label}</div>
         <div style="flex:1; text-align:right;color:${colors.white}">${value}</div>
     </div>`
 }
@@ -63,6 +64,8 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
   if(_.isUndefined(xAxisField) || _.isUndefined(yAxisField) || _.isUndefined(sizeField) || _.isUndefined(labelField)) {
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id} data={data} needsStringField />;
   }
+
+  const _getCell = _.partial(getCell, options.tooltipLabelWidth || 160)
 
   const items: any[][] = []
 
@@ -115,13 +118,20 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
       textStyle: {
         color: colors.text
       },
-      formatter: (param: any) => {
-        let s = '<div style="width: 160px">'
+      formatter: (param: EChartsParams): string => {
+        let s = `<div style="width: ${options.tooltipWidth}px">`
+        s += _getCell(options.labelFieldName, param.data[3], colors.text)
+        s += _getCell(options.xAxisFieldName, param.data[0], colors.text)
+        s += _getCell(options.yAxisFieldName, param.data[1], colors.text)
+        s += _getCell(options.sizeFieldName, `${(param.data[2]).toFixed(2)}%`, param.data[2] >= 70 ? colors.red : colors.green)
+
         s += `<div style="border-bottom: 1px solid ${colors.border}; margin: 4px -4px;"></div>`
-        s += getCell(options.labelFieldName, param.data[3], colors.text)
-        s += getCell(options.xAxisFieldName, param.data[0], colors.green)
-        s += getCell(options.yAxisFieldName, param.data[1], colors.green)
-        s += getCell(options.sizeFieldName, `${(param.data[2]).toFixed(2)}%`, param.data[2] >= 70 ? colors.red : colors.green)
+        for(const name of options.addtionFieldsForTooltip) {
+          const field = _.find(data.series[0].fields, f => f.name === name)
+          if(field) {
+            s += _getCell(name, field.values[param.dataIndex])
+          }
+        }
         s += '</div>'
         return s
       }

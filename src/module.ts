@@ -2,7 +2,8 @@
  * Created by Wu Jian Ping on - 2024/12/17.
  */
 
-import { PanelPlugin } from '@grafana/data';
+import { FieldOverrideContext, PanelPlugin } from '@grafana/data';
+
 import { ScatterPanel } from './components/ScatterPanel';
 import { ScatterPanelOptions } from './types';
 
@@ -57,5 +58,41 @@ export const plugin = new PanelPlugin<ScatterPanelOptions>(ScatterPanel).setPane
       name: 'Bottom',
       defaultValue: '8%',
       category: ["Layout"]
+    })
+
+    .addNumberInput({
+      path: 'tooltipWidth',
+      name: 'Tooltip width',
+      defaultValue: 220,
+      category: ["Tooltip settings"],
+    })
+    .addNumberInput({
+      path: 'tooltipLabelWidth',
+      name: 'Tooltip label width',
+      defaultValue: 110,
+      category: ["Tooltip settings"],
+    })
+
+    .addMultiSelect({
+      path: 'addtionFieldsForTooltip',
+      name: 'Addtion fields in tooltip',
+      description: 'Append addtional fields in tooltip',
+      category: ["Tooltip settings"],
+      settings: {
+        options: [],
+        getOptions: (context: FieldOverrideContext) => {
+          const items: any[] = []
+          if (context.data.length > 0) {
+            const fields = context.data[0].fields
+            for (const f of fields) {
+              items.push({
+                label: f.name,
+                value: f.name
+              })
+            }
+          }
+          return Promise.resolve(items)
+        }
+      }
     })
 });
