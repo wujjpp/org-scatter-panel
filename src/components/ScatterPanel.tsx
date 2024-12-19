@@ -145,10 +145,9 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
         },
         itemStyle: {
           shadowBlur: 10,
-          shadowColor: (params: any) => { 
-            return params.data[2] >= 70 ? 'rgb(242, 73, 92)': 'rgb(115, 191, 105)'
-          },
+          // shadowColor: 'rgb(255, 166, 176)',
           shadowOffsetY: 5,
+          // shadowOffsetX: 2,
           color: (params: any) => {
             const p = params.data[2]
             if(p >= 70) {
