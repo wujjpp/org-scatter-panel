@@ -120,12 +120,6 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
       },
       formatter: (param: EChartsParams): string => {
         let s = `<div style="width: ${options.tooltipWidth}px">`
-        s += _getCell(options.labelFieldName, param.data[3], colors.text)
-        s += _getCell(options.xAxisFieldName, param.data[0], colors.text)
-        s += _getCell(options.yAxisFieldName, param.data[1], colors.text)
-        s += _getCell(options.sizeFieldName, `${(param.data[2]).toFixed(2)}%`, param.data[2] >= 70 ? colors.red : colors.green)
-
-        s += `<div style="border-bottom: 1px solid ${colors.border}; margin: 4px -4px;"></div>`
         for(const name of options.addtionFieldsForTooltip) {
           const field = _.find(data.series[0].fields, f => f.name === name)
           if(field) {
@@ -145,9 +139,7 @@ export const ScatterPanel: React.FC<Props> = ({ options, data, width, height, fi
         },
         itemStyle: {
           shadowBlur: 10,
-          // shadowColor: 'rgb(255, 166, 176)',
           shadowOffsetY: 5,
-          // shadowOffsetX: 2,
           color: (params: any) => {
             const p = params.data[2]
             if(p >= 70) {
